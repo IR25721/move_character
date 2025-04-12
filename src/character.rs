@@ -1,6 +1,5 @@
 use crate::animation::*;
 use bevy::prelude::*;
-const PLAYER_SPEED: f32 = 250.;
 #[derive(Component)]
 pub struct Player;
 
@@ -63,6 +62,11 @@ pub fn move_player(
             last: 14,
         });
     }
-    let move_delta = direction.normalize_or_zero() * PLAYER_SPEED * time.delta_secs();
+    let player_speed = if kb_input.pressed(KeyCode::ShiftLeft) {
+        500.
+    } else {
+        250.
+    };
+    let move_delta = direction.normalize_or_zero() * player_speed * time.delta_secs();
     player.translation += move_delta.extend(0.);
 }
