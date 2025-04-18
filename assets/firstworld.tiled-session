@@ -1,0 +1,59 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "seconmap.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "basemap": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2398.5,
+                "y": 2398.5
+            }
+        },
+        "basemap.tmx": {
+            "scale": 0.39840624999999996,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 694.0152168797554,
+                "y": 766.8052396266374
+            }
+        },
+        "basetileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "seconmap.tmx": {
+            "scale": 1,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 536.5,
+                "y": 347.5
+            }
+        }
+    },
+    "last.imagePath": "/home/zawa/rust/move_character/assets",
+    "last.worldFilePath": "/home/zawa/rust/move_character/assets",
+    "loadedWorlds": [
+        "/home/zawa/rust/move_character/assets/baseworld.world"
+    ],
+    "map.height": 50,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 50,
+    "openFiles": [
+        "seconmap.tmx"
+    ],
+    "project": "firstworld.tiled-project",
+    "recentFiles": [
+        "seconmap.tmx",
+        "basemap.tmx",
+        "basetileset.tsx",
+        "basemap"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}

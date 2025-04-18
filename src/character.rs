@@ -1,4 +1,5 @@
 use crate::animation::*;
+use avian2d::prelude::*;
 use bevy::prelude::*;
 #[derive(Component)]
 pub struct Player;
@@ -25,7 +26,13 @@ pub fn setup_character(
                 index: 0,
             },
         ),
-        Transform::from_scale(Vec3::splat(6.)),
+        Transform {
+            translation: Vec3::new(0., 0., -50.),
+            scale: Vec3::splat(6.),
+            ..Default::default()
+        },
+        RigidBody::Dynamic,
+        Collider::circle(50.),
         AnimationTimer(Timer::from_seconds(0.2, TimerMode::Repeating)),
     ));
 }
@@ -63,9 +70,9 @@ pub fn move_player(
         });
     }
     let player_speed = if kb_input.pressed(KeyCode::ShiftLeft) {
-        500.
+        1000.
     } else {
-        250.
+        500.
     };
     let move_delta = direction.normalize_or_zero() * player_speed * time.delta_secs();
     player.translation += move_delta.extend(0.);

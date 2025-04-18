@@ -2,16 +2,16 @@ mod animation;
 mod camera;
 mod character;
 mod field;
-mod tiled;
 use animation::*;
+use avian2d::prelude::*;
 use bevy::prelude::*;
-use bevy_ecs_tilemap::prelude::*;
+use bevy_ecs_tiled::prelude::*;
 use camera::*;
 use character::*;
 use field::*;
 fn main() {
     App::new()
-        .add_plugins(
+        .add_plugins((
             DefaultPlugins
                 .set(WindowPlugin {
                     primary_window: Some(Window {
@@ -21,9 +21,10 @@ fn main() {
                     ..default()
                 })
                 .set(ImagePlugin::default_nearest()),
-        )
-        .add_plugins(TilemapPlugin)
-        .add_plugins(tiled::TiledMapPlugin)
+            PhysicsPlugins::default().with_length_unit(100.),
+        ))
+        .add_plugins(TiledMapPlugin::default())
+        .add_plugins(TiledPhysicsPlugin::<TiledPhysicsAvianBackend>::default())
         .add_systems(Startup, (setup_character, setup_camera, startup))
         .add_event::<Walking>()
         .add_systems(
