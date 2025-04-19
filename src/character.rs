@@ -35,6 +35,7 @@ pub fn setup_character(
         Collider::circle(50.),
         AnimationTimer(Timer::from_seconds(0.2, TimerMode::Repeating)),
     ));
+    commands.spawn((RigidBody::Static, Collider::circle(25.)));
 }
 pub fn move_player(
     mut player: Query<&mut Transform, With<Player>>,

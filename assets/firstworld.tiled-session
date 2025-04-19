@@ -32,7 +32,7 @@
             "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 536.5,
+                "x": 613.5,
                 "y": 347.5
             }
         }
@@ -49,10 +49,11 @@
         "seconmap.tmx"
     ],
     "project": "firstworld.tiled-project",
+    "property.type": "bool",
     "recentFiles": [
         "seconmap.tmx",
-        "basemap.tmx",
         "basetileset.tsx",
+        "basemap.tmx",
         "basemap"
     ],
     "tileset.lastUsedFormat": "tsx"
