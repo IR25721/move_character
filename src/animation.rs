@@ -12,12 +12,12 @@ pub fn animate_sprite(
     mut is_reverse: Local<bool>,
     mut reader: EventReader<Walking>,
 ) {
-    let mut first: usize = 0;
-    let mut last: usize = 0;
+    let mut _first: usize = 0;
+    let mut _last: usize = 0;
     for event in reader.read() {
-        first = event.first;
-        last = event.last;
-        if first == last {
+        _first = event.first;
+        _last = event.last;
+        if _first == _last {
             return;
         }
         let just_pressed = keyboard_input.just_pressed(KeyCode::KeyW)
@@ -32,7 +32,7 @@ pub fn animate_sprite(
         for (mut timer, mut sprite) in &mut query {
             if let Some(atlas) = &mut sprite.texture_atlas {
                 if just_pressed {
-                    atlas.index = first;
+                    atlas.index = _first;
                     *is_reverse = false;
                     println!("キーが押されたので atlas.index をリセット: {}", atlas.index);
                 }
@@ -43,13 +43,13 @@ pub fn animate_sprite(
                     if !*is_reverse {
                         atlas.index += 1;
                         println!("Current sprite index: {}", atlas.index);
-                        if atlas.index == last {
+                        if atlas.index == _last {
                             *is_reverse = true;
                         }
                     } else {
                         atlas.index -= 1;
                         println!("Current sprite index: {}", atlas.index);
-                        if atlas.index == first {
+                        if atlas.index == _first {
                             *is_reverse = false;
                         }
                     }

@@ -1,8 +1,13 @@
 use crate::animation::*;
+use avian2d::collision::*;
 use avian2d::prelude::*;
 use bevy::prelude::*;
 #[derive(Component)]
 pub struct Player;
+#[derive(Resource, Default)]
+pub struct PlayerCollisionState {
+    pub is_colliding: bool,
+}
 
 #[derive(Event, Clone, Copy, Debug)]
 pub struct Walking {
@@ -28,53 +33,117 @@ pub fn setup_character(
         ),
         Transform {
             translation: Vec3::new(0., 0., -50.),
-            scale: Vec3::splat(6.),
+            scale: Vec3::splat(3.),
             ..Default::default()
         },
         RigidBody::Dynamic,
-        Collider::circle(50.),
+        Collider::rectangle(10., 20.),
+        LockedAxes::ROTATION_LOCKED,
         AnimationTimer(Timer::from_seconds(0.2, TimerMode::Repeating)),
     ));
-    commands.spawn((RigidBody::Static, Collider::circle(25.)));
+}
+
+pub fn keep_entity_upright(mut query: Query<&mut Transform, With<Player>>) {
+    for mut transform in &mut query {
+        transform.rotation = Quat::IDENTITY;
+    }
 }
 pub fn move_player(
-    mut player: Query<&mut Transform, With<Player>>,
-    time: Res<Time>,
+    mut player: Query<&mut LinearVelocity, With<Player>>,
     kb_input: Res<ButtonInput<KeyCode>>,
     mut write: EventWriter<Walking>,
+    state: Res<PlayerCollisionState>,
 ) {
     let Ok(mut player) = player.get_single_mut() else {
         return;
     };
-    let mut direction = Vec2::ZERO;
 
-    if kb_input.pressed(KeyCode::KeyW) {
-        direction.y += 1.;
-        write.send(Walking {
-            first: 18,
-            last: 20,
-        });
+    if state.is_colliding {
+        if kb_input.pressed(KeyCode::KeyW) {
+            write.send(Walking {
+                first: 18,
+                last: 20,
+            });
+        } else if kb_input.pressed(KeyCode::KeyS) {
+            write.send(Walking { first: 0, last: 2 });
+        } else if kb_input.pressed(KeyCode::KeyA) {
+            write.send(Walking { first: 6, last: 8 });
+        } else if kb_input.pressed(KeyCode::KeyD) {
+            write.send(Walking {
+                first: 12,
+                last: 14,
+            });
+        }
     }
-    if kb_input.pressed(KeyCode::KeyS) {
-        direction.y -= 1.;
-        write.send(Walking { first: 0, last: 2 });
+
+    let mut walking_animation = None;
+
+    let w = kb_input.pressed(KeyCode::KeyW);
+    let a = kb_input.pressed(KeyCode::KeyA);
+    let s = kb_input.pressed(KeyCode::KeyS);
+    let d = kb_input.pressed(KeyCode::KeyD);
+    match (w, a, s, d) {
+        (true, false, false, false) => {
+            walking_animation = Some((18, 20));
+        }
+        (false, true, false, false) => {
+            walking_animation = Some((6, 8));
+        }
+        (false, false, true, false) => {
+            walking_animation = Some((0, 2));
+        }
+        (false, false, false, true) => {
+            walking_animation = Some((12, 14));
+        }
+        (true, true, false, false) => {
+            walking_animation = Some((15, 17));
+        }
+        (true, false, false, true) => {
+            walking_animation = Some((21, 23));
+        }
+        (false, true, true, false) => {
+            walking_animation = Some((3, 5));
+        }
+        (false, false, true, true) => {
+            walking_animation = Some((9, 11));
+        }
+        _ => {}
     }
-    if kb_input.pressed(KeyCode::KeyA) {
-        direction.x -= 1.;
-        write.send(Walking { first: 6, last: 8 });
+    if let Some((first, last)) = walking_animation {
+        write.send(Walking { first, last });
     }
-    if kb_input.pressed(KeyCode::KeyD) {
-        direction.x += 1.;
-        write.send(Walking {
-            first: 12,
-            last: 14,
-        });
-    }
-    let player_speed = if kb_input.pressed(KeyCode::ShiftLeft) {
-        1000.
-    } else {
-        500.
+}
+
+pub fn handle_player_collision_events(
+    mut events: EventReader<CollisionStarted>,
+    mut state: ResMut<PlayerCollisionState>,
+    player_query: Query<Entity, With<Player>>,
+) {
+    let Ok(player_entity) = player_query.get_single() else {
+        return;
     };
-    let move_delta = direction.normalize_or_zero() * player_speed * time.delta_secs();
-    player.translation += move_delta.extend(0.);
+
+    for event in events.read() {
+        if event.0 == player_entity || event.1 == player_entity {
+            state.is_colliding = true;
+            println!("Player collided!");
+        }
+    }
+}
+
+pub fn handle_player_collision_end(
+    mut events: EventReader<CollisionEnded>,
+    mut state: ResMut<PlayerCollisionState>,
+    player_query: Query<Entity, With<Player>>,
+) {
+    let Ok(player_entity) = player_query.get_single() else {
+        return;
+    };
+
+    for event in events.read() {
+        if event.0 == player_entity || event.1 == player_entity {
+            state.is_colliding = false;
+            println!("Player no longer colliding");
+        }
+    }
 }
