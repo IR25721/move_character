@@ -48,7 +48,7 @@ pub fn keep_entity_upright(mut query: Query<&mut Transform, With<Player>>) {
         transform.rotation = Quat::IDENTITY;
     }
 }
-pub fn move_player(
+pub fn animate_player(
     mut player: Query<&mut LinearVelocity, With<Player>>,
     kb_input: Res<ButtonInput<KeyCode>>,
     mut write: EventWriter<Walking>,
@@ -57,24 +57,6 @@ pub fn move_player(
     let Ok(mut player) = player.get_single_mut() else {
         return;
     };
-
-    if state.is_colliding {
-        if kb_input.pressed(KeyCode::KeyW) {
-            write.send(Walking {
-                first: 18,
-                last: 20,
-            });
-        } else if kb_input.pressed(KeyCode::KeyS) {
-            write.send(Walking { first: 0, last: 2 });
-        } else if kb_input.pressed(KeyCode::KeyA) {
-            write.send(Walking { first: 6, last: 8 });
-        } else if kb_input.pressed(KeyCode::KeyD) {
-            write.send(Walking {
-                first: 12,
-                last: 14,
-            });
-        }
-    }
 
     let mut walking_animation = None;
 
@@ -113,7 +95,29 @@ pub fn move_player(
         write.send(Walking { first, last });
     }
 }
+pub fn handle_keyboard_input(
+    mut query: Query<&mut LinearVelocity, With<Player>>,
+    input: Res<ButtonInput<KeyCode>>,
+) {
+    let speed = 500.;
+    for mut linear_velocity in query.iter_mut() {
+        linear_velocity.x = if input.pressed(KeyCode::KeyD) {
+            speed
+        } else if input.pressed(KeyCode::KeyA) {
+            -speed
+        } else {
+            0.
+        };
 
+        linear_velocity.y = if input.pressed(KeyCode::KeyW) {
+            speed
+        } else if input.pressed(KeyCode::KeyS) {
+            -speed
+        } else {
+            0.
+        };
+    }
+}
 pub fn handle_player_collision_events(
     mut events: EventReader<CollisionStarted>,
     mut state: ResMut<PlayerCollisionState>,

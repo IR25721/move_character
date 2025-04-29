@@ -8,8 +8,9 @@ use bevy::prelude::*;
 use bevy_ecs_tiled::prelude::*;
 use camera::{move_camera_with_player, setup_camera};
 use character::{
-    PlayerCollisionState, Walking, handle_player_collision_end, handle_player_collision_events,
-    keep_entity_upright, move_player, setup_character,
+    PlayerCollisionState, Walking, animate_player, handle_keyboard_input,
+    handle_player_collision_end, handle_player_collision_events, keep_entity_upright,
+    setup_character,
 };
 use field::{MyCustomAvianPhysicsBackend, startup};
 fn main() {
@@ -40,7 +41,8 @@ fn main() {
             (
                 handle_player_collision_events,
                 handle_player_collision_end,
-                move_player,
+                animate_player,
+                handle_keyboard_input,
                 move_camera_with_player,
                 animate_sprite,
                 keep_entity_upright,

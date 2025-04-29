@@ -25,13 +25,18 @@ pub fn animate_sprite(
             || keyboard_input.just_pressed(KeyCode::KeyS)
             || keyboard_input.just_pressed(KeyCode::KeyD);
 
+        let just_released = keyboard_input.just_released(KeyCode::KeyW)
+            || keyboard_input.just_released(KeyCode::KeyA)
+            || keyboard_input.just_released(KeyCode::KeyS)
+            || keyboard_input.just_released(KeyCode::KeyD);
+
         let is_key_pressed = keyboard_input.pressed(KeyCode::KeyW)
             || keyboard_input.pressed(KeyCode::KeyA)
             || keyboard_input.pressed(KeyCode::KeyS)
             || keyboard_input.pressed(KeyCode::KeyD);
         for (mut timer, mut sprite) in &mut query {
             if let Some(atlas) = &mut sprite.texture_atlas {
-                if just_pressed {
+                if just_pressed || just_released {
                     atlas.index = _first;
                     *is_reverse = false;
                     println!("キーが押されたので atlas.index をリセット: {}", atlas.index);
