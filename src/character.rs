@@ -4,6 +4,15 @@ use avian2d::prelude::*;
 use bevy::prelude::*;
 #[derive(Component)]
 pub struct Player;
+#[derive(Component)]
+pub struct Cpu {
+    id: u8,
+}
+impl Cpu {
+    fn new(cpu_id: u8) -> Self {
+        Self { id: cpu_id }
+    }
+}
 #[derive(Resource, Default)]
 pub struct PlayerCollisionState {
     pub is_colliding: bool,
@@ -19,15 +28,18 @@ pub fn setup_character(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let texture_handle: Handle<Image> = asset_server.load("woman_walking.png");
-    let texture_atlas_layout = TextureAtlasLayout::from_grid(UVec2::new(20, 28), 6, 4, None, None);
-    let texture_atlas_layout_handle = texture_atlases.add(texture_atlas_layout);
+    let texture_handle0: Handle<Image> = asset_server.load("woman_walking.png");
+    let texture_atlas_layout0 = TextureAtlasLayout::from_grid(UVec2::new(20, 28), 6, 4, None, None);
+    let texture_atlas_layout_handle0 = texture_atlases.add(texture_atlas_layout0);
+    let texture_handle1: Handle<Image> = asset_server.load("cpu01.png");
+    let texture_atlas_layout1 = TextureAtlasLayout::from_grid(UVec2::new(20, 28), 6, 4, None, None);
+    let texture_atlas_layout_handle1 = texture_atlases.add(texture_atlas_layout1);
     commands.spawn((
         Player,
         Sprite::from_atlas_image(
-            texture_handle,
+            texture_handle0,
             TextureAtlas {
-                layout: texture_atlas_layout_handle,
+                layout: texture_atlas_layout_handle0,
                 index: 0,
             },
         ),
@@ -37,6 +49,25 @@ pub fn setup_character(
             ..Default::default()
         },
         RigidBody::Dynamic,
+        Collider::rectangle(10., 20.),
+        LockedAxes::ROTATION_LOCKED,
+        AnimationTimer(Timer::from_seconds(0.2, TimerMode::Repeating)),
+    ));
+    commands.spawn((
+        Cpu::new(0),
+        Sprite::from_atlas_image(
+            texture_handle1,
+            TextureAtlas {
+                layout: texture_atlas_layout_handle1,
+                index: 0,
+            },
+        ),
+        Transform {
+            translation: Vec3::new(40., -40., -50.),
+            scale: Vec3::splat(3.),
+            ..Default::default()
+        },
+        RigidBody::Static,
         Collider::rectangle(10., 20.),
         LockedAxes::ROTATION_LOCKED,
         AnimationTimer(Timer::from_seconds(0.2, TimerMode::Repeating)),

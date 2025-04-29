@@ -1,6 +1,7 @@
 mod animation;
 mod camera;
 mod character;
+mod cpu_talk;
 mod field;
 use animation::animate_sprite;
 use avian2d::prelude::*;
@@ -12,12 +13,14 @@ use character::{
     handle_player_collision_end, handle_player_collision_events, keep_entity_upright,
     setup_character,
 };
+use cpu_talk::{HukidashiToggleState, toggle_hukidashi};
 use field::{MyCustomAvianPhysicsBackend, startup};
 fn main() {
     App::new()
         .add_event::<CollisionStarted>()
         .add_event::<CollisionEnded>()
         .insert_resource(PlayerCollisionState::default())
+        .insert_resource(HukidashiToggleState::default())
         .add_plugins((
             DefaultPlugins
                 .set(WindowPlugin {
@@ -46,6 +49,7 @@ fn main() {
                 move_camera_with_player,
                 animate_sprite,
                 keep_entity_upright,
+                toggle_hukidashi,
             )
                 .chain(),
         )
