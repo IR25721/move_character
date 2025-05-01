@@ -139,13 +139,18 @@ pub fn handle_player_collision_events(
     mut events: EventReader<CollisionStarted>,
     mut state: ResMut<PlayerCollisionState>,
     player_query: Query<Entity, With<Player>>,
+    npc_query: Query<Entity, With<Npc>>,
 ) {
     let Ok(player_entity) = player_query.get_single() else {
         return;
     };
-
+    let Ok(npc_entity) = npc_query.get_single() else {
+        return;
+    };
     for event in events.read() {
-        if event.0 == player_entity || event.1 == player_entity {
+        if (event.0 == player_entity && event.1 == npc_entity)
+            || (event.1 == player_entity && npc_entity == event.0)
+        {
             state.is_colliding = true;
             println!("Player collided!");
         }
@@ -156,13 +161,19 @@ pub fn handle_player_collision_end(
     mut events: EventReader<CollisionEnded>,
     mut state: ResMut<PlayerCollisionState>,
     player_query: Query<Entity, With<Player>>,
+    npc_query: Query<Entity, With<Npc>>,
 ) {
     let Ok(player_entity) = player_query.get_single() else {
         return;
     };
+    let Ok(npc_entity) = npc_query.get_single() else {
+        return;
+    };
 
     for event in events.read() {
-        if event.0 == player_entity || event.1 == player_entity {
+        if (event.0 == player_entity && event.1 == npc_entity)
+            || (event.1 == player_entity && npc_entity == event.0)
+        {
             state.is_colliding = false;
             println!("Player no longer colliding");
         }
