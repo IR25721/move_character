@@ -5,14 +5,8 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct Player;
 #[derive(Component)]
-pub struct Cpu {
-    id: u8,
-}
-impl Cpu {
-    fn new(cpu_id: u8) -> Self {
-        Self { id: cpu_id }
-    }
-}
+pub struct Npc;
+
 #[derive(Resource, Default)]
 pub struct PlayerCollisionState {
     pub is_colliding: bool,
@@ -54,7 +48,7 @@ pub fn setup_character(
         AnimationTimer(Timer::from_seconds(0.2, TimerMode::Repeating)),
     ));
     commands.spawn((
-        Cpu::new(0),
+        Npc,
         Sprite::from_atlas_image(
             texture_handle1,
             TextureAtlas {
@@ -79,16 +73,7 @@ pub fn keep_entity_upright(mut query: Query<&mut Transform, With<Player>>) {
         transform.rotation = Quat::IDENTITY;
     }
 }
-pub fn animate_player(
-    mut player: Query<&mut LinearVelocity, With<Player>>,
-    kb_input: Res<ButtonInput<KeyCode>>,
-    mut write: EventWriter<Walking>,
-    state: Res<PlayerCollisionState>,
-) {
-    let Ok(mut player) = player.get_single_mut() else {
-        return;
-    };
-
+pub fn animate_player(kb_input: Res<ButtonInput<KeyCode>>, mut write: EventWriter<Walking>) {
     let mut walking_animation = None;
 
     let w = kb_input.pressed(KeyCode::KeyW);
@@ -130,7 +115,7 @@ pub fn handle_keyboard_input(
     mut query: Query<&mut LinearVelocity, With<Player>>,
     input: Res<ButtonInput<KeyCode>>,
 ) {
-    let speed = 500.;
+    let speed = 200.;
     for mut linear_velocity in query.iter_mut() {
         linear_velocity.x = if input.pressed(KeyCode::KeyD) {
             speed
@@ -149,6 +134,7 @@ pub fn handle_keyboard_input(
         };
     }
 }
+
 pub fn handle_player_collision_events(
     mut events: EventReader<CollisionStarted>,
     mut state: ResMut<PlayerCollisionState>,

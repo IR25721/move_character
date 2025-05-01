@@ -8,3 +8,4 @@ bevy = "0.15"
 bevy_ecs_tilemap = "0.15"
 bevy_ecs_tiled = { version = "0.6", features = ["avian"] }
 avian2d = "0.2.1"
+bevy_ui_anchor = "0.5.1"

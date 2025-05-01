@@ -7,7 +7,8 @@ use animation::animate_sprite;
 use avian2d::prelude::*;
 use bevy::prelude::*;
 use bevy_ecs_tiled::prelude::*;
-use camera::{move_camera_with_player, setup_camera};
+use bevy_ui_anchor::AnchorUiPlugin;
+use camera::{CameraMarker, move_camera_with_player, setup_camera};
 use character::{
     PlayerCollisionState, Walking, animate_player, handle_keyboard_input,
     handle_player_collision_end, handle_player_collision_events, keep_entity_upright,
@@ -37,6 +38,7 @@ fn main() {
         .insert_resource(Gravity::ZERO)
         .add_plugins(TiledMapPlugin::default())
         .add_plugins(TiledPhysicsPlugin::<MyCustomAvianPhysicsBackend>::default())
+        .add_plugins(AnchorUiPlugin::<CameraMarker>::new())
         .add_systems(Startup, (setup_character, setup_camera, startup))
         .add_event::<Walking>()
         .add_systems(

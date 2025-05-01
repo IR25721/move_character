@@ -1,7 +1,13 @@
 use crate::character::Player;
 use bevy::prelude::*;
+#[derive(Component)]
+pub struct CameraMarker;
 pub fn setup_camera(mut commands: Commands) {
-    commands.spawn(Camera2d);
+    commands.spawn((
+        CameraMarker,
+        IsDefaultUiCamera,
+        Camera2d,
+    ));
 }
 pub fn move_camera_with_player(
     mut camera: Query<&mut Transform, (With<Camera2d>, Without<Player>)>,
