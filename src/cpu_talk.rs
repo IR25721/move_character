@@ -10,6 +10,10 @@ pub struct Hukidashi;
 pub struct HukidashiToggleState {
     cooldown: Timer,
 }
+#[derive(Resource, Default)]
+pub struct TalkingState {
+    pub is_talking: bool,
+}
 
 pub fn toggle_hukidashi(
     mut commands: Commands,
@@ -19,15 +23,18 @@ pub fn toggle_hukidashi(
     query_npc: Query<Entity, With<Npc>>,
     mut state: ResMut<HukidashiToggleState>,
     collider: Res<PlayerCollisionState>,
+    mut talkingstate: ResMut<TalkingState>,
     time: Res<Time>,
 ) {
     state.cooldown.tick(time.delta());
     let npc_entity = query_npc.get_single().expect("not found");
     if collider.is_colliding {
         if input.just_pressed(KeyCode::Enter) && state.cooldown.finished() {
+            talkingstate.is_talking = false;
             if let Some(entity) = query.iter().next() {
                 commands.entity(entity).despawn_recursive();
             } else {
+                talkingstate.is_talking = true;
                 commands
                     .spawn((
                         ImageNode::new(assets.load("hukidashi.png")),

@@ -1,4 +1,5 @@
 use crate::animation::*;
+use crate::cpu_talk::TalkingState;
 use avian2d::collision::*;
 use avian2d::prelude::*;
 use bevy::prelude::*;
@@ -73,49 +74,57 @@ pub fn keep_entity_upright(mut query: Query<&mut Transform, With<Player>>) {
         transform.rotation = Quat::IDENTITY;
     }
 }
-pub fn animate_player(kb_input: Res<ButtonInput<KeyCode>>, mut write: EventWriter<Walking>) {
-    let mut walking_animation = None;
+pub fn animate_player(
+    kb_input: Res<ButtonInput<KeyCode>>,
+    mut write: EventWriter<Walking>,
+    talkingstate: Res<TalkingState>,
+) {
+    if talkingstate.is_talking {
+    } else {
+        let mut walking_animation = None;
 
-    let w = kb_input.pressed(KeyCode::KeyW);
-    let a = kb_input.pressed(KeyCode::KeyA);
-    let s = kb_input.pressed(KeyCode::KeyS);
-    let d = kb_input.pressed(KeyCode::KeyD);
-    match (w, a, s, d) {
-        (true, false, false, false) => {
-            walking_animation = Some((18, 20));
+        let w = kb_input.pressed(KeyCode::KeyW);
+        let a = kb_input.pressed(KeyCode::KeyA);
+        let s = kb_input.pressed(KeyCode::KeyS);
+        let d = kb_input.pressed(KeyCode::KeyD);
+        match (w, a, s, d) {
+            (true, false, false, false) => {
+                walking_animation = Some((18, 20));
+            }
+            (false, true, false, false) => {
+                walking_animation = Some((6, 8));
+            }
+            (false, false, true, false) => {
+                walking_animation = Some((0, 2));
+            }
+            (false, false, false, true) => {
+                walking_animation = Some((12, 14));
+            }
+            (true, true, false, false) => {
+                walking_animation = Some((15, 17));
+            }
+            (true, false, false, true) => {
+                walking_animation = Some((21, 23));
+            }
+            (false, true, true, false) => {
+                walking_animation = Some((3, 5));
+            }
+            (false, false, true, true) => {
+                walking_animation = Some((9, 11));
+            }
+            _ => {}
         }
-        (false, true, false, false) => {
-            walking_animation = Some((6, 8));
+        if let Some((first, last)) = walking_animation {
+            write.send(Walking { first, last });
         }
-        (false, false, true, false) => {
-            walking_animation = Some((0, 2));
-        }
-        (false, false, false, true) => {
-            walking_animation = Some((12, 14));
-        }
-        (true, true, false, false) => {
-            walking_animation = Some((15, 17));
-        }
-        (true, false, false, true) => {
-            walking_animation = Some((21, 23));
-        }
-        (false, true, true, false) => {
-            walking_animation = Some((3, 5));
-        }
-        (false, false, true, true) => {
-            walking_animation = Some((9, 11));
-        }
-        _ => {}
-    }
-    if let Some((first, last)) = walking_animation {
-        write.send(Walking { first, last });
     }
 }
 pub fn handle_keyboard_input(
     mut query: Query<&mut LinearVelocity, With<Player>>,
     input: Res<ButtonInput<KeyCode>>,
+    talkingstate: Res<TalkingState>,
 ) {
-    let speed = 200.;
+    let speed = if talkingstate.is_talking { 0. } else { 200. };
     for mut linear_velocity in query.iter_mut() {
         linear_velocity.x = if input.pressed(KeyCode::KeyD) {
             speed

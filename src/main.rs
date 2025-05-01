@@ -14,7 +14,7 @@ use character::{
     handle_player_collision_end, handle_player_collision_events, keep_entity_upright,
     setup_character,
 };
-use cpu_talk::{HukidashiToggleState, toggle_hukidashi};
+use cpu_talk::{HukidashiToggleState, TalkingState, toggle_hukidashi};
 use field::{MyCustomAvianPhysicsBackend, startup};
 fn main() {
     App::new()
@@ -22,6 +22,7 @@ fn main() {
         .add_event::<CollisionEnded>()
         .insert_resource(PlayerCollisionState::default())
         .insert_resource(HukidashiToggleState::default())
+        .insert_resource(TalkingState::default())
         .add_plugins((
             DefaultPlugins
                 .set(WindowPlugin {
