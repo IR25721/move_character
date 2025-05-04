@@ -2,7 +2,9 @@ mod animation;
 mod camera;
 mod character;
 mod cpu_talk;
+mod dialog;
 mod field;
+mod menu;
 use animation::animate_sprite;
 use avian2d::prelude::*;
 use bevy::prelude::*;
@@ -14,7 +16,8 @@ use character::{
     handle_player_collision_end, handle_player_collision_events, keep_entity_upright,
     setup_character,
 };
-use cpu_talk::{HukidashiToggleState, TalkingState, toggle_hukidashi};
+use cpu_talk::{FlowingTextTimer, HukidashiToggleState, TalkingState, toggle_hukidashi};
+use dialog::flowing_text;
 use field::{MyCustomAvianPhysicsBackend, startup};
 fn main() {
     App::new()
@@ -22,6 +25,7 @@ fn main() {
         .add_event::<CollisionEnded>()
         .insert_resource(PlayerCollisionState::default())
         .insert_resource(HukidashiToggleState::default())
+        .insert_resource(FlowingTextTimer::default())
         .insert_resource(TalkingState::default())
         .add_plugins((
             DefaultPlugins
@@ -53,6 +57,7 @@ fn main() {
                 animate_sprite,
                 keep_entity_upright,
                 toggle_hukidashi,
+                flowing_text,
             )
                 .chain(),
         )

@@ -1,8 +1,16 @@
+use std::collections::HashMap;
+
 use crate::animation::*;
 use crate::cpu_talk::TalkingState;
 use avian2d::collision::*;
 use avian2d::prelude::*;
 use bevy::prelude::*;
+
+#[derive(Component, PartialEq, Eq, Debug, Hash, Clone, Copy)]
+pub enum NpcId {
+    Cpu01,
+    Woman2,
+}
 #[derive(Component)]
 pub struct Player;
 #[derive(Component)]
@@ -10,7 +18,7 @@ pub struct Npc;
 
 #[derive(Resource, Default)]
 pub struct PlayerCollisionState {
-    pub is_colliding: bool,
+    pub is_colliding: HashMap<NpcId, bool>,
 }
 
 #[derive(Event, Clone, Copy, Debug)]
@@ -50,6 +58,7 @@ pub fn setup_character(
     ));
     commands.spawn((
         Npc,
+        NpcId::Cpu01,
         Sprite::from_atlas_image(
             texture_handle1,
             TextureAtlas {
@@ -65,7 +74,28 @@ pub fn setup_character(
         RigidBody::Static,
         Collider::rectangle(10., 20.),
         LockedAxes::ROTATION_LOCKED,
-        AnimationTimer(Timer::from_seconds(0.2, TimerMode::Repeating)),
+    ));
+    let texture_handle2: Handle<Image> = asset_server.load("woman2.png");
+    let texture_atlas_layout2 = TextureAtlasLayout::from_grid(UVec2::new(20, 28), 6, 4, None, None);
+    let texture_atlas_layout_handle2 = texture_atlases.add(texture_atlas_layout2);
+    commands.spawn((
+        Npc,
+        NpcId::Woman2,
+        Sprite::from_atlas_image(
+            texture_handle2,
+            TextureAtlas {
+                layout: texture_atlas_layout_handle2,
+                index: 0,
+            },
+        ),
+        Transform {
+            translation: Vec3::new(0., 200., -50.),
+            scale: Vec3::splat(3.),
+            ..Default::default()
+        },
+        RigidBody::Static,
+        Collider::rectangle(10., 20.),
+        LockedAxes::ROTATION_LOCKED,
     ));
 }
 
@@ -143,48 +173,45 @@ pub fn handle_keyboard_input(
         };
     }
 }
-
 pub fn handle_player_collision_events(
     mut events: EventReader<CollisionStarted>,
     mut state: ResMut<PlayerCollisionState>,
     player_query: Query<Entity, With<Player>>,
-    npc_query: Query<Entity, With<Npc>>,
+    npc_query: Query<(Entity, &NpcId), With<Npc>>,
 ) {
     let Ok(player_entity) = player_query.get_single() else {
         return;
     };
-    let Ok(npc_entity) = npc_query.get_single() else {
-        return;
-    };
+
     for event in events.read() {
-        if (event.0 == player_entity && event.1 == npc_entity)
-            || (event.1 == player_entity && npc_entity == event.0)
-        {
-            state.is_colliding = true;
-            println!("Player collided!");
+        for (npc_entity, npc_id) in npc_query.iter() {
+            if (event.0 == player_entity && event.1 == npc_entity)
+                || (event.1 == player_entity && npc_entity == event.0)
+            {
+                state.is_colliding.insert(*npc_id, true);
+                println!("Player collided with {:?}", npc_id);
+            }
         }
     }
 }
-
 pub fn handle_player_collision_end(
     mut events: EventReader<CollisionEnded>,
     mut state: ResMut<PlayerCollisionState>,
     player_query: Query<Entity, With<Player>>,
-    npc_query: Query<Entity, With<Npc>>,
+    npc_query: Query<(Entity, &NpcId), With<Npc>>,
 ) {
     let Ok(player_entity) = player_query.get_single() else {
         return;
     };
-    let Ok(npc_entity) = npc_query.get_single() else {
-        return;
-    };
 
     for event in events.read() {
-        if (event.0 == player_entity && event.1 == npc_entity)
-            || (event.1 == player_entity && npc_entity == event.0)
-        {
-            state.is_colliding = false;
-            println!("Player no longer colliding");
+        for (npc_entity, npc_id) in npc_query.iter() {
+            if (event.0 == player_entity && event.1 == npc_entity)
+                || (event.1 == player_entity && npc_entity == event.0)
+            {
+                state.is_colliding.insert(*npc_id, false);
+                println!("Player no longer colliding with {:?}", npc_id);
+            }
         }
     }
 }
