@@ -39,8 +39,8 @@ pub fn toggle_hukidashi(
                     .spawn((
                         ImageNode::new(assets.load("hukidashi.png")),
                         Node {
-                            width: Val::Px(200.),
-                            height: Val::Px(100.),
+                            width: Val::Px(800.),
+                            height: Val::Px(300.),
                             ..default()
                         },
                         AnchorUiNode {
@@ -53,15 +53,18 @@ pub fn toggle_hukidashi(
                     ))
                     .with_children(|builder| {
                         builder.spawn((
-                            Text::new("hello bevy!"),
+                            Text::new(
+                                "これはテスト文章です．もしなにか問題がありましたら\n連絡してください．",
+                            ),
                             TextFont {
+                                font: assets.load("fonts/hutoi.ttf"),
                                 font_size: 25.,
                                 ..default()
                             },
                             Node {
                                 position_type: PositionType::Relative,
-                                bottom: Val::Px(-15.0),
-                                right: Val::Px(-15.0),
+                                bottom: Val::Px(-40.0),
+                                right: Val::Px(-60.0),
                                 ..default()
                             },
                             TextColor(Color::srgb(0., 0., 0.)),
