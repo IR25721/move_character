@@ -19,7 +19,10 @@ use character::{
 use cpu_talk::{FlowingTextTimer, HukidashiToggleState, TalkingState, toggle_hukidashi};
 use dialog::flowing_text;
 use field::{MyCustomAvianPhysicsBackend, startup};
-use menu::{ButtonAnimation, animate_button_position, moveup_button_input, setup_menu};
+use menu::{
+    ButtonAnimation, SelectedButton, animate_button_position, moveup_button_input, setup_menu,
+    setup_selected_button, trigger_button_action, update_button_outline, update_selected_button,
+};
 fn main() {
     App::new()
         .add_event::<CollisionStarted>()
@@ -29,6 +32,7 @@ fn main() {
         .insert_resource(FlowingTextTimer::default())
         .insert_resource(TalkingState::default())
         .insert_resource(ButtonAnimation::default())
+        .insert_resource(SelectedButton::default())
         .add_plugins((
             DefaultPlugins
                 .set(WindowPlugin {
@@ -48,7 +52,13 @@ fn main() {
         .add_plugins(AnchorUiPlugin::<CameraMarker>::new())
         .add_systems(
             Startup,
-            (setup_character, setup_camera, startup, setup_menu),
+            (
+                setup_character,
+                setup_camera,
+                startup,
+                setup_menu,
+                setup_selected_button,
+            ),
         )
         .add_event::<Walking>()
         .add_systems(
@@ -65,6 +75,9 @@ fn main() {
                 flowing_text,
                 moveup_button_input,
                 animate_button_position,
+                update_selected_button,
+                trigger_button_action,
+                update_button_outline,
             )
                 .chain(),
         )
