@@ -5,6 +5,7 @@ mod cpu_talk;
 mod dialog;
 mod field;
 mod menu;
+mod menu_main;
 use animation::animate_sprite;
 use avian2d::prelude::*;
 use bevy::prelude::*;
@@ -20,13 +21,16 @@ use cpu_talk::{FlowingTextTimer, HukidashiToggleState, TalkingState, toggle_huki
 use dialog::flowing_text;
 use field::{MyCustomAvianPhysicsBackend, startup};
 use menu::{
-    ButtonAnimation, SelectedButton, animate_button_position, moveup_button_input, setup_menu,
-    setup_selected_button, trigger_button_action, update_button_outline, update_selected_button,
+    ButtonAnimation, SelectedButton, ShowDetail, animate_button_position, moveup_button_input,
+    setup_menu, setup_selected_button, trigger_button_action, update_button_outline,
+    update_selected_button,
 };
+use menu_main::toggle_main_menu;
 fn main() {
     App::new()
         .add_event::<CollisionStarted>()
         .add_event::<CollisionEnded>()
+        .add_event::<ShowDetail>()
         .insert_resource(PlayerCollisionState::default())
         .insert_resource(HukidashiToggleState::default())
         .insert_resource(FlowingTextTimer::default())
@@ -78,6 +82,7 @@ fn main() {
                 update_selected_button,
                 trigger_button_action,
                 update_button_outline,
+                toggle_main_menu,
             )
                 .chain(),
         )

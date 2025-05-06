@@ -1,19 +1,20 @@
 use bevy::{color::palettes::css::*, prelude::*};
+
 #[derive(Resource)]
 pub struct SelectedButton(pub ButtonId);
 impl Default for SelectedButton {
     fn default() -> Self {
-        SelectedButton(ButtonId::Items)
+        SelectedButton(ButtonId::Main)
     }
 }
-const BUTTON_ORDER: [ButtonId; 3] = [ButtonId::Items, ButtonId::Status, ButtonId::Setting];
+const BUTTON_ORDER: [ButtonId; 3] = [ButtonId::Main, ButtonId::Status, ButtonId::Setting];
 
 #[derive(Component)]
 pub struct MenuButton;
 
 #[derive(Component, PartialEq, Eq, Debug, Hash, Clone, Copy)]
 pub enum ButtonId {
-    Items,
+    Main,
     Status,
     Setting,
 }
@@ -36,11 +37,15 @@ impl Default for ButtonAnimation {
         }
     }
 }
+#[derive(Event)]
+pub struct ShowDetail {
+    button_id: ButtonId,
+}
 pub fn setup_menu(mut commands: Commands, assets: Res<AssetServer>) {
     commands
         .spawn((
             MenuButton,
-            ButtonId::Items,
+            ButtonId::Main,
             Node {
                 display: Display::Grid,
                 position_type: PositionType::Absolute,
@@ -178,7 +183,7 @@ pub fn animate_button_position(
     }
 }
 pub fn setup_selected_button(mut commands: Commands) {
-    commands.insert_resource(SelectedButton(ButtonId::Items));
+    commands.insert_resource(SelectedButton(ButtonId::Main));
 }
 
 pub fn update_selected_button(
@@ -204,9 +209,13 @@ pub fn trigger_button_action(
     kb_input: Res<ButtonInput<KeyCode>>,
     selected: Res<SelectedButton>,
     animation: ResMut<ButtonAnimation>,
+    mut write: EventWriter<ShowDetail>,
 ) {
     if kb_input.just_pressed(KeyCode::KeyF) && animation.is_open {
         println!("Selected button: {:?}", selected.0);
+        write.send(ShowDetail {
+            button_id: selected.0,
+        });
     }
 }
 pub fn update_button_outline(
