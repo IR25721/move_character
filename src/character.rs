@@ -34,6 +34,11 @@ pub fn setup_character(
     let texture_handle0: Handle<Image> = asset_server.load("woman_walking.png");
     let texture_atlas_layout0 = TextureAtlasLayout::from_grid(UVec2::new(20, 28), 6, 4, None, None);
     let texture_atlas_layout_handle0 = texture_atlases.add(texture_atlas_layout0);
+
+    let texture_handle3: Handle<Image> = asset_server.load("fellow1.png");
+    let texture_atlas_layout3 = TextureAtlasLayout::from_grid(UVec2::new(20, 28), 6, 4, None, None);
+    let texture_atlas_layout_handle3 = texture_atlases.add(texture_atlas_layout3);
+
     let texture_handle1: Handle<Image> = asset_server.load("cpu01.png");
     let texture_atlas_layout1 = TextureAtlasLayout::from_grid(UVec2::new(20, 28), 6, 4, None, None);
     let texture_atlas_layout_handle1 = texture_atlases.add(texture_atlas_layout1);
@@ -48,7 +53,7 @@ pub fn setup_character(
         ),
         Transform {
             translation: Vec3::new(0., 0., -50.),
-            scale: Vec3::splat(3.),
+            scale: Vec3::splat(5.),
             ..Default::default()
         },
         RigidBody::Dynamic,
@@ -68,7 +73,7 @@ pub fn setup_character(
         ),
         Transform {
             translation: Vec3::new(40., -40., -50.),
-            scale: Vec3::splat(3.),
+            scale: Vec3::splat(5.),
             ..Default::default()
         },
         RigidBody::Static,
@@ -90,7 +95,7 @@ pub fn setup_character(
         ),
         Transform {
             translation: Vec3::new(0., 200., -50.),
-            scale: Vec3::splat(3.),
+            scale: Vec3::splat(5.),
             ..Default::default()
         },
         RigidBody::Static,

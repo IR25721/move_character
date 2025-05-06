@@ -1,0 +1,10 @@
+[player]
+id = 1
+name = "f0"
+lv = 6
+total_exp = 300
+hp = 43.0
+mp = 14
+attack = 20.0
+defense = 6.0
+speed = 13.0
