@@ -4,8 +4,10 @@ mod character;
 mod cpu_talk;
 mod dialog;
 mod field;
+mod item_enum;
 mod menu;
 mod menu_main;
+mod menu_windows;
 use animation::animate_sprite;
 use avian2d::prelude::*;
 use bevy::prelude::*;
@@ -25,7 +27,8 @@ use menu::{
     setup_menu, setup_selected_button, trigger_button_action, update_button_outline,
     update_selected_button,
 };
-use menu_main::toggle_main_menu;
+use menu_main::{MainMenuCursor, navigate_main_menu, toggle_main_menu};
+use menu_windows::MenuSelectStates;
 fn main() {
     App::new()
         .add_event::<CollisionStarted>()
@@ -37,6 +40,8 @@ fn main() {
         .insert_resource(TalkingState::default())
         .insert_resource(ButtonAnimation::default())
         .insert_resource(SelectedButton::default())
+        .insert_resource(MenuSelectStates::default())
+        .insert_resource(MainMenuCursor::default())
         .add_plugins((
             DefaultPlugins
                 .set(WindowPlugin {
@@ -83,6 +88,7 @@ fn main() {
                 trigger_button_action,
                 update_button_outline,
                 toggle_main_menu,
+                navigate_main_menu,
             )
                 .chain(),
         )

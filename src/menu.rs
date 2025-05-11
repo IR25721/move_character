@@ -1,5 +1,7 @@
 use bevy::{color::palettes::css::*, prelude::*};
 
+use crate::menu_windows::MenuSelectStates;
+
 #[derive(Resource)]
 pub struct SelectedButton(pub ButtonId);
 impl Default for SelectedButton {
@@ -147,8 +149,9 @@ pub fn setup_menu(mut commands: Commands, assets: Res<AssetServer>) {
 pub fn moveup_button_input(
     kb_input: Res<ButtonInput<KeyCode>>,
     mut animation: ResMut<ButtonAnimation>,
+    mut menu_select: Res<MenuSelectStates>,
 ) {
-    if kb_input.just_pressed(KeyCode::KeyG) {
+    if kb_input.just_pressed(KeyCode::KeyG) && !menu_select.is_main_select {
         animation.is_open = !animation.is_open;
         animation.target_y = if animation.is_open { 800.0 } else { 1100.0 };
     }
@@ -189,9 +192,10 @@ pub fn setup_selected_button(mut commands: Commands) {
 pub fn update_selected_button(
     kb_input: Res<ButtonInput<KeyCode>>,
     mut selected: ResMut<SelectedButton>,
+    select_main_menu: Res<MenuSelectStates>,
     animation: ResMut<ButtonAnimation>,
 ) {
-    if animation.is_open {
+    if animation.is_open && select_main_menu.is_main_select {
         let current = selected.0;
         let idx = BUTTON_ORDER.iter().position(|&b| b == current).unwrap();
 

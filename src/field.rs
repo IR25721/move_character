@@ -1,6 +1,8 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
 use bevy_ecs_tiled::prelude::*;
+use tiled::ObjectLayer;
+
 pub fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let world_handle: Handle<TiledMap> = asset_server.load("seconmap.tmx");
     commands.spawn((TiledMapHandle(world_handle), TiledMapAnchor::Center));
@@ -9,7 +11,6 @@ pub fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
 #[derive(Default, Debug, Clone, Reflect)]
 #[reflect(Default, Debug)]
 pub struct MyCustomAvianPhysicsBackend(TiledPhysicsAvianBackend);
-
 impl TiledPhysicsBackend for MyCustomAvianPhysicsBackend {
     fn spawn_colliders(
         &self,
@@ -25,5 +26,16 @@ impl TiledPhysicsBackend for MyCustomAvianPhysicsBackend {
             commands.entity(c.entity).insert(RigidBody::Static);
         }
         colliders
+    }
+}
+
+fn handle_collision_layer(map: &World_handle) {
+    for layer in &map.object_layers {
+        if layer.name == "collision" {
+            for object in &layer.objects {
+                // ここでコリジョンを生成する処理など
+                println!("Collider at ({}, {})", object.x, object.y);
+            }
+        }
     }
 }
